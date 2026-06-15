@@ -154,6 +154,26 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .cat-add-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#2c2b28;color:#faf8f5;padding:10px 22px;border-radius:22px;font-size:.8rem;font-weight:500;opacity:0;transition:all .3s ease;pointer-events:none;z-index:200}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* AI input */
+.ai-fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:1.4rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(59,66,112,.35);transition:var(--transition);z-index:40}
+.ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 22px rgba(59,66,112,.45)}
+.ai-modal-overlay{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;background:rgba(45,42,38,.12);backdrop-filter:blur(3px)}
+.ai-modal{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:460px;max-width:92vw;animation:modalIn .25s cubic-bezier(.4,0,.2,1)}
+.ai-modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border-light)}
+.ai-modal-header h3{font-size:1.05rem;font-weight:700;font-family:var(--font-heading)}
+.ai-modal-body{padding:20px 22px}
+.ai-modal-body textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:var(--font-body);resize:vertical;min-height:80px;outline:none;transition:var(--transition);background:var(--card);color:var(--text);line-height:1.6}
+.ai-modal-body textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,66,112,.08)}
+.ai-modal-body .ai-hint{font-size:.72rem;color:var(--text-dim);margin-top:8px}
+.ai-preview{margin-top:14px;padding:14px;background:var(--accent-light);border-radius:var(--radius-sm);display:none}
+.ai-preview.show{display:block}
+.ai-preview-item{font-size:.82rem;margin-bottom:6px;display:flex;gap:8px}
+.ai-preview-item .ai-label{color:var(--text-muted);min-width:48px;font-weight:600}
+.ai-preview-item .ai-value{color:var(--text)}
+.ai-loading{text-align:center;padding:16px;color:var(--text-muted);font-size:.85rem;display:none}
+.ai-loading.show{display:block}
+
 @media(max-width:768px){
   .app{padding:12px 8px 40px}
   .header{flex-direction:column;align-items:stretch;gap:10px}
@@ -969,7 +989,153 @@ document.addEventListener("visibilitychange",async function(){
   renderInbox(); renderCatLegend();
   
 })();
+
+// ===== AI SMART ADD =====
+var AI_WORKER = 'https://round-haze-1bd0.sdon90909.workers.dev/';
+var _aiParsedTask = null;
+
+function openAiModal(){
+  document.getElementById('aiModal').style.display = 'flex';
+  document.getElementById('aiInput').focus();
+  document.getElementById('aiPreview').classList.remove('show');
+  document.getElementById('aiConfirmBtn').style.display = 'none';
+  document.getElementById('aiLoading').classList.remove('show');
+  _aiParsedTasks = null;
+}
+function closeAiModal(){
+  document.getElementById('aiModal').style.display = 'none';
+}
+
+async function parseAiInput(){
+  var input = document.getElementById('aiInput').value.trim();
+  if(!input) return;
+
+  var loading = document.getElementById('aiLoading');
+  var preview = document.getElementById('aiPreview');
+  var confirmBtn = document.getElementById('aiConfirmBtn');
+  
+  loading.classList.add('show');
+  preview.classList.remove('show');
+  confirmBtn.style.display = 'none';
+  _aiParsedTask = null;
+
+  try{
+    var today = todayStr();
+    var prompt = '今天的日期是 ' + today + '。请解析以下日程描述，返回 JSON：' + input;
+    
+    var resp = await fetch(AI_WORKER, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: prompt})
+    });
+    
+    var result = await resp.json();
+    loading.classList.remove('show');
+    
+    // Extract JSON from DeepSeek response
+    var msgContent = result.choices && result.choices[0] && result.choices[0].message 
+      ? result.choices[0].message.content : '';
+    
+    if(!msgContent){
+      preview.innerHTML = '<div style="color:var(--danger)">AI 未返回结果，请重试</div>';
+      preview.classList.add('show');
+      return;
+    }
+    
+    // Clean up: remove markdown code fences if present
+    msgContent = msgContent.replace('```json','').replace('```','').trim();
+    var parsed = JSON.parse(msgContent);
+    
+    // Normalize to array
+    var taskList = Array.isArray(parsed) ? parsed : [parsed];
+    
+    var catMap = {'工作':'cat_work','个人':'cat_personal','学习':'cat_study','重要':'cat_important'};
+    
+    _aiParsedTasks = [];
+    var html = '';
+    for(var i = 0; i < taskList.length; i++){
+      var t = taskList[i];
+      var catName = t.category || '工作';
+      var catId = catMap[catName] || 'cat_work';
+      var cat = getCategory(catId) || appData.categories[0];
+      
+      var task = {
+        date: t.date || '',
+        endDate: t.endDate || '',
+        time: t.time || '',
+        title: t.title || ('任务' + (i+1)),
+        category: catId,
+        note: t.note || ''
+      };
+      _aiParsedTasks.push(task);
+      
+      var isLast = (i === taskList.length - 1);
+      html += '<div class="ai-preview-item" style="padding:8px 0;' + (isLast ? '' : 'border-bottom:1px solid var(--border-light)') + '">';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">';
+      html += '<span style="font-weight:700;color:var(--accent);min-width:20px">#' + (i+1) + '</span>';
+      html += '<span style="font-weight:600">' + escHtml(task.title) + '</span>';
+      html += '<span style="font-size:.7rem;color:#fff;background:' + cat.color + ';padding:1px 7px;border-radius:8px">' + catName + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:.75rem;color:var(--text-muted);padding-left:28px">';
+      html += (task.date ? '📅 ' + task.date : '📥 待办') + ' ';
+      html += (task.time ? '⏰ ' + task.time + ' ' : '');
+      html += (task.endDate ? '→ ' + task.endDate + ' ' : '');
+      html += (task.note ? '💬 ' + escHtml(task.note) : '');
+      html += '</div></div>';
+    }
+    
+    preview.innerHTML = html;
+    preview.classList.add('show');
+    confirmBtn.style.display = 'inline-flex';
+    confirmBtn.textContent = '✅ 确认添加 (' + taskList.length + '项)';
+  }catch(e){
+    loading.classList.remove('show');
+    preview.innerHTML = '<div style="color:var(--danger)">解析失败：' + e.message + '</div>';
+    preview.classList.add('show');
+  }
+}
+
+function confirmAiTask(){
+  var tasks = _aiParsedTasks;
+  if(!tasks || !tasks.length) return;
+  for(var i = 0; i < tasks.length; i++){
+    var t = tasks[i];
+    appData.tasks.push({
+      id: 't' + Date.now() + '_' + i,
+      date: t.date,
+      endDate: t.endDate,
+      time: t.time,
+      title: t.title,
+      category: t.category,
+      done: false,
+      location: '',
+      description: t.note || ''
+    });
+  }
+  saveData();
+  closeAiModal();
+  renderCalendar();
+  if(typeof renderInbox === 'function') renderInbox();
+  showToast('已添加 ' + tasks.length + ' 项任务');
+}
+
 </script>
 
+<button class="ai-fab" id="aiFab" title="AI 智能添加日程" onclick="openAiModal()">🤖</button>
+<div class="ai-modal-overlay" id="aiModal" style="display:none" onclick="if(event.target===this)closeAiModal()">
+  <div class="ai-modal">
+    <div class="ai-modal-header"><h3>🤖 AI 智能添加</h3><button class="modal-close" onclick="closeAiModal()">&times;</button></div>
+    <div class="ai-modal-body">
+      <textarea id="aiInput" placeholder="用自然语言描述你的日程，例如：&#10;明天下午3点开团队周会 工作&#10;下周三全天参加培训 学习&#10;7月5号晚上8点聚餐 个人"></textarea>
+      <div class="ai-hint">💡 输入后点击解析，AI 会自动识别日期、时间、分类</div>
+      <div class="ai-loading" id="aiLoading">⏳ AI 正在解析...</div>
+      <div class="ai-preview" id="aiPreview"></div>
+    </div>
+    <div class="modal-footer" style="margin-top:0">
+      <button class="action-btn" onclick="parseAiInput()">🔍 解析</button>
+      <button class="action-btn primary" id="aiConfirmBtn" style="display:none" onclick="confirmAiTask()">✅ 确认添加</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
