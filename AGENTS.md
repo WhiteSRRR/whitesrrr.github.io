@@ -62,6 +62,10 @@ Python 脚本 (manage_schedule.py) → 写入 __ED → git push → GitHub Pages
 }
 ```
 
+
+> ⚠️ **分支说明 (2026-06-15)**：GitHub Pages 部署分支已改为 master。
+> main 分支已删除。所有推送直接到 master。
+
 ## 部署地址
 
 - **GitHub Pages**：`https://whitesrrr.github.io/calendar/`

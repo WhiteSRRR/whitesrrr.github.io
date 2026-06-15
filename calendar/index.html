@@ -310,7 +310,7 @@ var __ED = {"version":20260615016,"currentMonth":"2026-06","categories":[{"id":"
 function getSampleTasks(){ return []; }
 
 function loadData(){
-  // __ED is the seed, Worker is the live data source
+  // __ED is the single source of truth. No localStorage.
   var d = __ED ? JSON.parse(JSON.stringify(__ED)) : {version:1,currentMonth:todayYearMonth(),categories:JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),tasks:[]};
   d.tasks = d.tasks || [];
   d.categories = d.categories || JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
@@ -320,76 +320,12 @@ function loadData(){
     if(!t.hasOwnProperty('location')) t.location='';
     if(!t.hasOwnProperty('description')) t.description='';
   });
-  // Async: try to load newer data from Worker
-  loadFromWorker(d);
   return d;
 }
 
 
 
-function saveData(){
-  __ED = JSON.parse(JSON.stringify(appData));
-  // Push to Worker for cross-device sync
-  syncToWorker();
-}
-
-// ===== WORKER SYNC =====
-var SYNC_URL = 'https://round-haze-1bd0.sdon90909.workers.dev/data';
-var _syncPending = false;
-var _syncTimer = null;
-
-// Load data from Worker (called once on startup)
-async function loadFromWorker(seedData){
-  try{
-    var resp = await fetch(SYNC_URL, { method: 'GET' });
-    var workerData = await resp.json();
-    if(workerData && workerData.tasks && workerData.version >= seedData.version){
-      // Worker has same or newer data - use it
-      __ED = workerData;
-      appData = JSON.parse(JSON.stringify(workerData));
-      parseAppMonth();
-      renderCalendar();
-      if(typeof renderInbox === 'function') renderInbox();
-      if(typeof renderCatLegend === 'function') renderCatLegend();
-      console.log('[sync] Loaded from worker v' + workerData.version + ' (' + workerData.tasks.length + ' tasks)');
-    } else if(workerData && (!workerData.tasks || workerData.version < seedData.version)){
-      // Worker has older/no data - seed it
-      console.log('[sync] Seeding worker with __ED v' + seedData.version);
-      await pushToWorker(seedData);
-    }
-  }catch(e){
-    console.log('[sync] Worker unreachable, using __ED seed');
-  }
-}
-
-// Push data to Worker (debounced, called on every save)
-function syncToWorker(){
-  if(_syncTimer) clearTimeout(_syncTimer);
-  _syncTimer = setTimeout(function(){
-    pushToWorker(appData);
-  }, 300);
-}
-
-async function pushToWorker(data){
-  if(_syncPending) return;
-  _syncPending = true;
-  try{
-    var resp = await fetch(SYNC_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-    var result = await resp.json();
-    if(result.ok){
-      console.log('[sync] Pushed to worker v' + (data.version || '?'));
-    }
-  }catch(e){
-    console.log('[sync] Push failed, will retry on next save');
-  }
-  _syncPending = false;
-}
-// ===== END WORKER SYNC =====
-
+function saveData(){ __ED = JSON.parse(JSON.stringify(appData)); }
 
 var appData = loadData();
 var currentYear, currentMonth, selectedDate = null;
