@@ -162,21 +162,43 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 /* AI input */
 .ai-fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:1.4rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(59,66,112,.35);transition:var(--transition);z-index:40}
 .ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 22px rgba(59,66,112,.45)}
-.ai-modal-overlay{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);}
-.ai-modal{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:460px;max-width:92vw;animation:modalIn .15s ease;will-change:transform,opacity;contain:layout style paint}
-.ai-modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border-light)}
-.ai-modal-header h3{font-size:1.05rem;font-weight:700;font-family:var(--font-heading)}
-.ai-modal-body{padding:20px 22px}
-.ai-modal-body textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:var(--font-body);resize:vertical;min-height:80px;outline:none;transition:var(--transition);background:var(--card);color:var(--text);line-height:1.6}
-.ai-modal-body textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,66,112,.08)}
-.ai-modal-body .ai-hint{font-size:.72rem;color:var(--text-dim);margin-top:8px}
-.ai-preview{margin-top:14px;padding:14px;background:var(--accent-light);border-radius:var(--radius-sm);display:none}
-.ai-preview.show{display:block}
-.ai-preview-item{font-size:.82rem;margin-bottom:6px;display:flex;gap:8px}
-.ai-preview-item .ai-label{color:var(--text-muted);min-width:48px;font-weight:600}
-.ai-preview-item .ai-value{color:var(--text)}
-.ai-loading{text-align:center;padding:16px;color:var(--text-muted);font-size:.85rem;display:none}
+.ai-modal-overlay{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.ai-modal{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.08);width:520px;max-width:94vw;max-height:88vh;overflow-y:auto;animation:modalIn .2s cubic-bezier(.34,1.56,.64,1);will-change:transform,opacity;contain:layout style paint}
+.ai-modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px}
+.ai-modal-header h3{font-size:1.15rem;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.ai-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--border-light);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--text-dim);transition:all .15s;flex-shrink:0}
+.ai-close:hover{background:var(--danger);color:#fff}
+.ai-modal-body{padding:0 24px 20px}
+.ai-textarea-wrap{position:relative;margin-bottom:12px}
+.ai-modal-body textarea{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:.9rem;font-family:inherit;resize:none;min-height:90px;outline:none;transition:all .2s;background:var(--bg);color:var(--text);line-height:1.7;box-shadow:inset 0 1px 3px rgba(0,0,0,.04)}
+.ai-modal-body textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(91,95,199,.1),inset 0 1px 3px rgba(0,0,0,.04)}
+.ai-modal-body textarea::placeholder{color:var(--text-dim);opacity:.6}
+.ai-hint{font-size:.72rem;color:var(--text-dim);margin-bottom:12px;line-height:1.5;display:flex;align-items:flex-start;gap:6px}
+.ai-hint-icon{flex-shrink:0;margin-top:1px}
+.ai-loading{display:none;text-align:center;padding:20px 0}
 .ai-loading.show{display:block}
+.ai-dots{display:inline-flex;gap:6px}
+.ai-dots span{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:aiBounce 1.4s ease-in-out infinite}
+.ai-dots span:nth-child(2){animation-delay:.2s}
+.ai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes aiBounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.ai-preview{margin-top:8px;display:none;flex-direction:column;gap:8px}
+.ai-preview.show{display:flex}
+.ai-preview-card{background:var(--bg);border-radius:10px;padding:12px 14px;border-left:3px solid var(--accent);animation:cardSlide .3s ease both}
+@keyframes cardSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ai-preview-card .ai-card-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ai-preview-card .ai-card-num{font-size:.75rem;font-weight:700;color:var(--accent);min-width:20px}
+.ai-preview-card .ai-card-title{font-weight:600;font-size:.85rem;flex:1}
+.ai-preview-card .ai-card-cat{font-size:.65rem;color:#fff;padding:2px 8px;border-radius:10px;font-weight:600;flex-shrink:0}
+.ai-preview-card .ai-card-meta{font-size:.7rem;color:var(--text-dim);padding-left:28px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.ai-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.ai-btn{border:none;cursor:pointer;font-size:.82rem;font-weight:600;padding:10px 20px;border-radius:10px;transition:all .15s;font-family:inherit}
+.ai-btn-parse{background:var(--bg);color:var(--text);border:1.5px solid var(--border)}
+.ai-btn-parse:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.ai-btn-confirm{background:var(--accent);color:#fff;display:none;box-shadow:0 4px 12px rgba(91,95,199,.3)}
+.ai-btn-confirm:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(91,95,199,.4);filter:brightness(1.08)}
+.ai-btn-confirm.show{display:inline-flex;align-items:center;gap:6px}
+.ai-error{color:var(--danger);font-size:.8rem;padding:8px 0}
 
 @media(max-width:768px){
   .app{padding:8px 4px 50px}
@@ -309,7 +331,7 @@ var DEFAULT_CATEGORIES = [
   {id:'cat_study',name:'学习',color:'#f59e0b'},
   {id:'cat_important',name:'重要',color:'#e5484d'}
 ];
-var __ED = {"version":20260616018,"currentMonth":"2026-06","categories":[{"id":"cat_work","name":"工作","color":"#5b5fc7"},{"id":"cat_personal","name":"个人","color":"#10b981"},{"id":"cat_study","name":"学习","color":"#f59e0b"},{"id":"cat_important","name":"重要","color":"#e5484d"}],"tasks":[{"id":"t01","date":"2026-06-23","endDate":"","time":"12:00","title":"中国近现代史纲要 期末","category":"cat_study","done":false,"location":"西楼C401","description":"12:00~14:00 松江校区"},{"id":"t02","date":"2026-06-26","endDate":"","time":"08:50","title":"法律文书 期末","category":"cat_study","done":false,"location":"西楼B304","description":"08:50~10:50 松江校区"},{"id":"t03","date":"2026-06-29","endDate":"","time":"12:00","title":"国际经济法概论 期末","category":"cat_study","done":false,"location":"西楼E301","description":"12:00~14:00 松江校区"},{"id":"t04","date":"2026-06-30","endDate":"","time":"08:50","title":"行政救济法 期末","category":"cat_study","done":false,"location":"西楼D202","description":"08:50~10:50 松江校区"},{"id":"t05","date":"2026-07-01","endDate":"","time":"12:00","title":"民事诉讼法学 期末","category":"cat_study","done":false,"location":"西楼B201","description":"12:00~14:00 松江校区"},{"id":"t06","date":"2026-07-02","endDate":"","time":"12:00","title":"知识产权法学 期末","category":"cat_study","done":false,"location":"西楼D101","description":"12:00~14:00 松江校区"},{"id":"t202606140006","date":"2026-06-15","endDate":"","time":"10:50","title":"公司法学考试","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606140007","date":"2026-06-15","endDate":"","time":"13:45","title":"担保法学考试","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150008","date":"2026-06-17","endDate":"","time":"22:00","title":"行政法课堂展示","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150009","date":"","endDate":"","time":"","title":"创建模拟法庭院队群","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150010","date":"2026-06-18","endDate":"","time":"18:00","title":"房地产法学考试","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150011","date":"2026-07-02","endDate":"","time":"","title":"行政法学作业 DDL","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150012","date":"","endDate":"","time":"","title":"模拟法庭团建意愿咨询","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150013","date":"2026-06-17","endDate":"","time":"22:00","title":"民事诉讼法学作业","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150014","date":"2026-07-02","endDate":"","time":"","title":"知识产权法作业 DDL","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150015","date":"2026-06-16","endDate":"","time":"08:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150016","date":"2026-06-18","endDate":"","time":"09:00","title":"文书工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150017","date":"2026-06-16","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150018","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150019","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150020","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150021","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150022","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150023","date":"2026-06-16","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150024","date":"2026-06-16","endDate":"","time":"12:00","title":"迪士尼行程安排","category":"cat_personal","done":false,"location":"","description":""},{"id":"t202606150025","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150026","date":"2026-06-27","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150027","date":"2026-06-28","endDate":"","time":"","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150028","date":"2026-06-01","endDate":"","time":"","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150029","date":"2026-06-04","endDate":"","time":"","title":"法律工作","category":"cat_work","done":false,"location":"","description":""}]};//^^CODEX_MARKER^^
+var __ED = {"version":20260616019,"currentMonth":"2026-06","categories":[{"id":"cat_work","name":"工作","color":"#5b5fc7"},{"id":"cat_personal","name":"个人","color":"#10b981"},{"id":"cat_study","name":"学习","color":"#f59e0b"},{"id":"cat_important","name":"重要","color":"#e5484d"}],"tasks":[{"id":"t01","date":"2026-06-23","endDate":"","time":"12:00","title":"中国近现代史纲要 期末","category":"cat_study","done":false,"location":"西楼C401","description":"12:00~14:00 松江校区"},{"id":"t02","date":"2026-06-26","endDate":"","time":"08:50","title":"法律文书 期末","category":"cat_study","done":false,"location":"西楼B304","description":"08:50~10:50 松江校区"},{"id":"t03","date":"2026-06-29","endDate":"","time":"12:00","title":"国际经济法概论 期末","category":"cat_study","done":false,"location":"西楼E301","description":"12:00~14:00 松江校区"},{"id":"t04","date":"2026-06-30","endDate":"","time":"08:50","title":"行政救济法 期末","category":"cat_study","done":false,"location":"西楼D202","description":"08:50~10:50 松江校区"},{"id":"t05","date":"2026-07-01","endDate":"","time":"12:00","title":"民事诉讼法学 期末","category":"cat_study","done":false,"location":"西楼B201","description":"12:00~14:00 松江校区"},{"id":"t06","date":"2026-07-02","endDate":"","time":"12:00","title":"知识产权法学 期末","category":"cat_study","done":false,"location":"西楼D101","description":"12:00~14:00 松江校区"},{"id":"t202606140006","date":"2026-06-15","endDate":"","time":"10:50","title":"公司法学考试","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606140007","date":"2026-06-15","endDate":"","time":"13:45","title":"担保法学考试","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150008","date":"2026-06-17","endDate":"","time":"22:00","title":"行政法课堂展示","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150009","date":"","endDate":"","time":"","title":"创建模拟法庭院队群","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150010","date":"2026-06-18","endDate":"","time":"18:00","title":"房地产法学考试","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150011","date":"2026-07-02","endDate":"","time":"","title":"行政法学作业 DDL","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150012","date":"","endDate":"","time":"","title":"模拟法庭团建意愿咨询","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150013","date":"2026-06-17","endDate":"","time":"22:00","title":"民事诉讼法学作业","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150014","date":"2026-07-02","endDate":"","time":"","title":"知识产权法作业 DDL","category":"cat_study","done":false,"location":"","description":""},{"id":"t202606150015","date":"2026-06-16","endDate":"","time":"08:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150016","date":"2026-06-18","endDate":"","time":"09:00","title":"文书工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150017","date":"2026-06-16","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150018","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150019","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150020","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150021","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150022","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150023","date":"2026-06-16","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150024","date":"2026-06-16","endDate":"","time":"12:00","title":"迪士尼行程安排","category":"cat_personal","done":false,"location":"","description":""},{"id":"t202606150025","date":"2026-06-19","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150026","date":"2026-06-27","endDate":"","time":"09:00","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150027","date":"2026-06-28","endDate":"","time":"","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150028","date":"2026-06-01","endDate":"","time":"","title":"法律工作","category":"cat_work","done":false,"location":"","description":""},{"id":"t202606150029","date":"2026-06-04","endDate":"","time":"","title":"法律工作","category":"cat_work","done":false,"location":"","description":""}]};//^^CODEX_MARKER^^
 
 function getSampleTasks(){ return []; }
 
@@ -1106,7 +1128,7 @@ async function parseAiInput(){
       ? result.choices[0].message.content : '';
     
     if(!msgContent){
-      preview.innerHTML = '<div style="color:var(--danger)">AI 未返回结果，请重试</div>';
+      preview.innerHTML = '<div class="ai-error">AI 未返回结果，请重试</div>';
       preview.classList.add('show');
       return;
     }
@@ -1139,27 +1161,27 @@ async function parseAiInput(){
       _aiParsedTasks.push(task);
       
       var isLast = (i === taskList.length - 1);
-      html += '<div class="ai-preview-item" style="padding:8px 0;' + (isLast ? '' : 'border-bottom:1px solid var(--border-light)') + '">';
-      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">';
-      html += '<span style="font-weight:700;color:var(--accent);min-width:20px">#' + (i+1) + '</span>';
-      html += '<span style="font-weight:600">' + escHtml(task.title) + '</span>';
-      html += '<span style="font-size:.7rem;color:#fff;background:' + cat.color + ';padding:1px 7px;border-radius:8px">' + catName + '</span>';
+      html += '<div class="ai-preview-card" style="animation-delay:' + (i * 0.08) + 's;border-left-color:' + cat.color + '">';
+      html += '<div class="ai-card-top">';
+      html += '<span class="ai-card-num">#' + (i+1) + '</span>';
+      html += '<span class="ai-card-title">' + escHtml(task.title) + '</span>';
+      html += '<span class="ai-card-cat" style="background:' + cat.color + '">' + catName + '</span>';
       html += '</div>';
-      html += '<div style="font-size:.75rem;color:var(--text-muted);padding-left:28px">';
-      html += (task.date ? '📅 ' + task.date : '📥 待办') + ' ';
-      html += (task.time ? '⏰ ' + task.time + ' ' : '');
-      html += (task.endDate ? '→ ' + task.endDate + ' ' : '');
-      html += (task.note ? '💬 ' + escHtml(task.note) : '');
+      html += '<div class="ai-card-meta">';
+      html += (task.date ? '<span>📅 ' + task.date + '</span>' : '<span>📥 待办</span>');
+      html += (task.time ? '<span>⏰ ' + task.time + '</span>' : '');
+      html += (task.endDate ? '<span>→ ' + task.endDate + '</span>' : '');
+      html += (task.note ? '<span>💬 ' + escHtml(task.note) + '</span>' : '');
       html += '</div></div>';
     }
     
     preview.innerHTML = html;
     preview.classList.add('show');
-    confirmBtn.style.display = 'inline-flex';
-    confirmBtn.textContent = '✅ 确认添加 (' + taskList.length + '项)';
+    confirmBtn.classList.add('show');
+    confirmBtn.innerHTML = '✅ 确认添加 <span style="opacity:.7">' + taskList.length + '项</span>';
   }catch(e){
     loading.classList.remove('show');
-    preview.innerHTML = '<div style="color:var(--danger)">解析失败：' + e.message + '</div>';
+    preview.innerHTML = '<div class="ai-error">解析失败：' + e.message + '</div>';
     preview.classList.add('show');
   }
 }
@@ -1193,19 +1215,28 @@ function confirmAiTask(){
 <button class="ai-fab" id="aiFab" title="AI 智能添加日程" onclick="openAiModal()">🤖</button>
 <div class="ai-modal-overlay" id="aiModal" style="display:none" onclick="if(event.target===this)closeAiModal()">
   <div class="ai-modal">
-    <div class="ai-modal-header"><h3>🤖 AI 智能添加</h3><button class="modal-close" onclick="closeAiModal()">&times;</button></div>
-    <div class="ai-modal-body">
-      <textarea id="aiInput" placeholder="用自然语言描述你的日程，例如：&#10;明天下午3点开团队周会 工作&#10;下周三全天参加培训 学习&#10;7月5号晚上8点聚餐 个人"></textarea>
-      <div class="ai-hint">💡 输入后点击解析，AI 会自动识别日期、时间、分类。未指定时间或日期的任务将进入待办列表</div>
-      <div class="ai-loading" id="aiLoading" style="display:none">⏳ AI 正在解析...</div>
-      <div class="ai-preview" id="aiPreview"></div>
+    <div class="ai-modal-header">
+      <h3>✨ AI 智能安排</h3>
+      <button class="ai-close" onclick="closeAiModal()">&times;</button>
     </div>
-    <div class="modal-footer" style="margin-top:0">
-      <button class="action-btn" onclick="parseAiInput()">🔍 解析</button>
-      <button class="action-btn primary" id="aiConfirmBtn" style="display:none" onclick="confirmAiTask()">✅ 确认添加</button>
+    <div class="ai-modal-body">
+      <div class="ai-textarea-wrap">
+        <textarea id="aiInput" placeholder="用自然语言描述你的日程&#10;&#10;例如：&#10;明天下午3点团队周会 工作&#10;下周三全天培训 学习&#10;周五晚上聚餐 个人"></textarea>
+      </div>
+      <div class="ai-hint">
+        <span class="ai-hint-icon">💡</span>
+        <span>输入自然语言后点解析，AI 自动识别日期、时间、分类。未指定时间的任务自动进入待办列表</span>
+      </div>
+      <div class="ai-loading" id="aiLoading">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        <div style="font-size:.78rem;color:var(--text-dim);margin-top:8px">AI 正在理解你的日程</div>
+      </div>
+      <div class="ai-preview" id="aiPreview"></div>
+      <div class="ai-actions">
+        <button class="ai-btn ai-btn-parse" onclick="parseAiInput()">🔍 解析日程</button>
+        <button class="ai-btn ai-btn-confirm" id="aiConfirmBtn" onclick="confirmAiTask()">✅ 确认添加</button>
+      </div>
     </div>
   </div>
-</div></body>
-</html>
-
-
+</div>
+</body>
