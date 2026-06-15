@@ -1118,6 +1118,59 @@ function confirmAiTask(){
   if(typeof renderInbox === 'function') renderInbox();
   showToast('已添加 ' + tasks.length + ' 项任务');
 }
+// ===== VOICE INPUT =====
+var _recognition = null;
+function startVoiceInput(){
+  var btn = document.getElementById('aiVoiceBtn');
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+    showToast('您的浏览器不支持语音输入，请使用 Chrome');
+    return;
+  }
+  if(_recognition){
+    _recognition.stop();
+    _recognition = null;
+    btn.textContent = '🎤';
+    btn.style.background = '';
+    btn.style.color = '';
+    showToast('语音输入已停止');
+    return;
+  }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  _recognition = new SR();
+  _recognition.lang = 'zh-CN';
+  _recognition.interimResults = true;
+  _recognition.continuous = true;
+  btn.textContent = '⏺';
+  btn.style.background = 'var(--danger)';
+  btn.style.color = '#fff';
+  btn.style.borderColor = 'var(--danger)';
+  var input = document.getElementById('aiInput');
+  var originalText = input.value;
+  _recognition.onresult = function(event){
+    var transcript = '';
+    for(var i = event.resultIndex; i < event.results.length; i++){
+      transcript += event.results[i][0].transcript;
+    }
+    input.value = originalText + (originalText ? '，' : '') + transcript;
+  };
+  _recognition.onerror = function(event){
+    console.error('Voice error:', event.error);
+    _recognition = null;
+    btn.textContent = '🎤';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  };
+  _recognition.onend = function(){
+    _recognition = null;
+    btn.textContent = '🎤';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  };
+  _recognition.start();
+  showToast('🎤 正在聆听...');
+}
 
 </script>
 
@@ -1126,8 +1179,12 @@ function confirmAiTask(){
   <div class="ai-modal">
     <div class="ai-modal-header"><h3>🤖 AI 智能添加</h3><button class="modal-close" onclick="closeAiModal()">&times;</button></div>
     <div class="ai-modal-body">
+      <div style="display:flex;gap:8px;align-items:flex-start">
       <textarea id="aiInput" placeholder="用自然语言描述你的日程，例如：&#10;明天下午3点开团队周会 工作&#10;下周三全天参加培训 学习&#10;7月5号晚上8点聚餐 个人"></textarea>
-      <div class="ai-hint">💡 输入后点击解析，AI 会自动识别日期、时间、分类</div>
+      </div>
+      <button class="action-btn" id="aiVoiceBtn" onclick="startVoiceInput()" title="语音输入" style="flex-shrink:0;height:80px;width:44px;justify-content:center;font-size:1.2rem">🎤</button>
+      </div>
+      <div class="ai-hint">💡 输入后点击解析，AI 会自动识别日期、时间、分类。未指定时间或日期的任务将进入待办列表</div>
       <div class="ai-loading" id="aiLoading">⏳ AI 正在解析...</div>
       <div class="ai-preview" id="aiPreview"></div>
     </div>
