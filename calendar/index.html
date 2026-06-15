@@ -973,7 +973,7 @@ document.addEventListener("visibilitychange",async function(){
 
 // ===== AI SMART ADD =====
 var AI_WORKER = 'https://round-haze-1bd0.sdon90909.workers.dev/';
-var _aiParsedTask = null;
+var _aiParsedTasks = null;
 
 function openAiModal(){
   document.getElementById('aiModal').style.display = 'flex';
@@ -998,7 +998,7 @@ async function parseAiInput(){
   loading.classList.add('show');
   preview.classList.remove('show');
   confirmBtn.style.display = 'none';
-  _aiParsedTask = null;
+  _aiParsedTasks = null;
 
   try{
     var today = todayStr();
@@ -1109,11 +1109,8 @@ function confirmAiTask(){
     <div class="ai-modal-header"><h3>🤖 AI 智能添加</h3><button class="modal-close" onclick="closeAiModal()">&times;</button></div>
     <div class="ai-modal-body">
       <textarea id="aiInput" placeholder="用自然语言描述你的日程，例如：&#10;明天下午3点开团队周会 工作&#10;下周三全天参加培训 学习&#10;7月5号晚上8点聚餐 个人"></textarea>
-      </div>
-      
-      </div>
       <div class="ai-hint">💡 输入后点击解析，AI 会自动识别日期、时间、分类。未指定时间或日期的任务将进入待办列表</div>
-      <div class="ai-loading" id="aiLoading">⏳ AI 正在解析...</div>
+      <div class="ai-loading" id="aiLoading" style="display:none">⏳ AI 正在解析...</div>
       <div class="ai-preview" id="aiPreview"></div>
     </div>
     <div class="modal-footer" style="margin-top:0">
@@ -1121,8 +1118,7 @@ function confirmAiTask(){
       <button class="action-btn primary" id="aiConfirmBtn" style="display:none" onclick="confirmAiTask()">✅ 确认添加</button>
     </div>
   </div>
-</div>
-</body>
+</div></body>
 </html>
 
 
