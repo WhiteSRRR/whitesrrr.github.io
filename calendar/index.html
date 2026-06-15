@@ -726,20 +726,10 @@ async function restoreSync(){
             if(await handle.requestPermission(opts)!=="granted"){resolve(false);return;}
           }
           syncFileHandle=handle;
-          // Only load from local file if it is NEWER than HTML __ED
-          // (script just updated the file). Otherwise keep GitHub-served data.
-          var file=await handle.getFile();
-          var text=await file.text();
-          if(text.trim()){
-            var s=text.indexOf("var __ED = ");
-            var e=text.indexOf("//^^CODEX_MARKER^^", s);
-            if(s>=0&&e>=0){
-              var j=text.substring(s+12,e).trim();
-              if(j.endsWith(';'))j=j.slice(0,-1);
-              var fd=JSON.parse(j);
-              if(fd.tasks && fd.version > __ED.version){__ED=fd;appData=JSON.parse(JSON.stringify(fd));parseAppMonth();renderCalendar();if(typeof renderInbox==="function")renderInbox();renderCatLegend();}
-            }
-          }
+          // DO NOT load data from local file on page load.
+          // __ED (from GitHub) is ALWAYS the source of truth.
+          // This ensures 100% consistency across all devices.
+          // Local file is only a write target for syncToFile().
           resolve(true);
         }catch(er){
           var delReq=indexedDB.open("CalendarSyncDB",1);
@@ -765,9 +755,12 @@ document.addEventListener("visibilitychange",async function(){
           if(j.endsWith(';'))j=j.slice(0,-1);
           var fd=JSON.parse(j);
           if(fd.tasks && fd.version > __ED.version && JSON.stringify(fd.tasks)!==JSON.stringify(appData.tasks)){
-            __ED=fd;appData=JSON.parse(JSON.stringify(fd));parseAppMonth();renderCalendar();
-            if(typeof renderInbox==="function")renderInbox();renderCatLegend();
-            if(window.sidebarDate)openSidebar(sidebarDate);
+                        var ok=confirm("检测到本地文件有更新的任务数据。是否加载？\n选[确定]加载本地数据，选[取消]保持当前显示。");
+            if(ok){
+              __ED=fd;appData=JSON.parse(JSON.stringify(fd));parseAppMonth();renderCalendar();
+              if(typeof renderInbox==="function")renderInbox();renderCatLegend();
+              if(window.sidebarDate)openSidebar(sidebarDate);
+            }
           }
         }
       }
