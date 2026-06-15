@@ -535,7 +535,8 @@ function renderCalendar(){
         taskHTML += '<div class="'+cls+'" style="background:'+lightenColor(cat.color)+';border-left-color:'+cat.color+'" title="'+escAttr(t.title)+'">';
         taskHTML += '<span class="pill-check" onclick="event.stopPropagation();toggleDone(\''+t.id+'\')">&#10003;</span>';
         taskHTML += '<span class="pill-dot" style="background:'+cat.color+'"></span>';
-        taskHTML += '<span onclick="event.stopPropagation();openEditModal(\''+t.id+'\')">'+escHtml(t.title+(t.time?' '+t.time:''))+'</span>';
+        taskHTML += '<span class="pill-title" onclick="event.stopPropagation();openEditModal(\''+t.id+'\')">'+escHtml(t.title)+'</span>';
+        taskHTML += (t.time?'<span class="pill-time">'+t.time+'</span>':'');
         taskHTML += '</div>';
       }
     });
