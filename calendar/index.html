@@ -355,7 +355,7 @@ function syncToWorker(){
   if(_syncTimer) clearTimeout(_syncTimer);
   _syncTimer = setTimeout(function(){
     pushToWorker(appData);
-  }, 500);
+  }, 50);
 }
 
 async function pushToWorker(data){
