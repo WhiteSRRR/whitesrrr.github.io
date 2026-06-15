@@ -1089,7 +1089,7 @@ function openAiModal(){
   document.getElementById('aiModal').style.display = 'flex';
   document.getElementById('aiInput').focus();
   document.getElementById('aiPreview').classList.remove('show');
-  document.getElementById('aiConfirmBtn').style.display = 'none';
+  document.getElementById('aiConfirmBtn').classList.remove('show');
   document.getElementById('aiLoading').classList.remove('show');
   _aiParsedTasks = null;
 }
@@ -1107,7 +1107,7 @@ async function parseAiInput(){
   
   loading.classList.add('show');
   preview.classList.remove('show');
-  confirmBtn.style.display = 'none';
+  confirmBtn.classList.remove('show');
   _aiParsedTasks = null;
 
   try{
