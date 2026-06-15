@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>日程月历 v16</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -322,19 +325,10 @@ function loadData(){
 
 
 
-function saveData(){ appData.version = (appData.version || 1) + 1; __ED = JSON.parse(JSON.stringify(appData)); syncToFile(); }
+function saveData(){ __ED = JSON.parse(JSON.stringify(appData)); }
 
 var appData = loadData();
 var currentYear, currentMonth, selectedDate = null;
-// Auto-restore file sync handle from IndexedDB
-restoreSync().then(function(ok){
-  if(ok){
-    console.log('[sync] auto-restored file handle');
-  } else {
-    // No stored handle — show one-time prompt
-    setTimeout(showSyncPrompt, 1500);
-  }
-});
 
 function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function todayYearMonth(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
@@ -574,6 +568,7 @@ function saveTask(){
     showToast('任务已添加'+(endDate?' (跨天:'+formatShortDate(date)+'-'+formatShortDate(endDate)+')':''));
   }
   saveData(); closeModal(); renderCalendar();
+</script>
   if(sidebarDate) openSidebar(sidebarDate);
 }
 function deleteTask(){
@@ -676,98 +671,7 @@ appData.tasks.forEach(function(t){
   if(!t.hasOwnProperty('endDate')) t.endDate='';
   if(!t.hasOwnProperty('location')) t.location='';
 });
-renderCalendar(); restoreSync();
-
-// ===== FILE SYSTEM ACCESS API SYNC =====
-var syncFileHandle=null;
-async function syncToFile(){
-  if(!syncFileHandle) return;
-  try{
-    var file = await syncFileHandle.getFile();
-    var text = await file.text();
-    var edStart = text.indexOf("var __ED = ");
-    var edEnd = text.indexOf("//^^CODEX_MARKER^^", edStart);
-    if(edStart >= 0 && edEnd >= 0){
-      var newJson = JSON.stringify(appData);
-      var updated = text.slice(0, edStart) + "var __ED = " + newJson + ";" + text.slice(edEnd);
-      var w = await syncFileHandle.createWritable();
-      await w.write(updated);
-      await w.close();
-    }
-  }catch(e){ console.error("syncToFile failed:", e); }
-}
-function storeFileHandle(handle){
-  return new Promise(function(resolve,reject){
-    var req=indexedDB.open("CalendarSyncDB",1);
-    req.onupgradeneeded=function(e){e.target.result.createObjectStore("handles");};
-    req.onsuccess=function(e){
-      var db=e.target.result;
-      var tx=db.transaction("handles","readwrite");
-      tx.objectStore("handles").put(handle,"syncFile");
-      tx.oncomplete=resolve;tx.onerror=reject;
-    };
-    req.onerror=reject;
-  });
-}
-async function restoreSync(){
-  return new Promise(function(resolve){
-    var req=indexedDB.open("CalendarSyncDB",1);
-    req.onupgradeneeded=function(e){e.target.result.createObjectStore("handles");};
-    req.onsuccess=async function(e){
-      var db=e.target.result;
-      var tx=db.transaction("handles","readonly");
-      var getReq=tx.objectStore("handles").get("syncFile");
-      getReq.onsuccess=async function(){
-        var handle=getReq.result;
-        if(!handle){resolve(false);return;}
-        try{
-          var opts={mode:"readwrite"};
-          if(await handle.queryPermission(opts)!=="granted"){
-            if(await handle.requestPermission(opts)!=="granted"){resolve(false);return;}
-          }
-          syncFileHandle=handle;
-          // DO NOT load data from local file on page load.
-          // __ED (from GitHub) is ALWAYS the source of truth.
-          // This ensures 100% consistency across all devices.
-          // Local file is only a write target for syncToFile().
-          resolve(true);
-        }catch(er){
-          var delReq=indexedDB.open("CalendarSyncDB",1);
-          delReq.onsuccess=function(ev){var d=ev.target.result;var t=d.transaction("handles","readwrite");t.objectStore("handles").delete("syncFile");};
-          resolve(false);
-        }
-      };
-      getReq.onerror=function(){resolve(false);};
-    };
-    req.onerror=function(){resolve(false);};
-  });
-}
-document.addEventListener("visibilitychange",async function(){
-  if(document.visibilityState==="visible"&&syncFileHandle){
-    try{
-      var file=await syncFileHandle.getFile();
-      var text=await file.text();
-      if(text.trim()){
-        var s=text.indexOf("var __ED = ");
-        var e=text.indexOf("//^^CODEX_MARKER^^", s);
-        if(s>=0&&e>=0){
-          var j=text.substring(s+12,e).trim();
-          if(j.endsWith(';'))j=j.slice(0,-1);
-          var fd=JSON.parse(j);
-          if(fd.tasks && fd.version > __ED.version && JSON.stringify(fd.tasks)!==JSON.stringify(appData.tasks)){
-                        var ok=confirm("检测到本地文件有更新的任务数据。是否加载？\n选[确定]加载本地数据，选[取消]保持当前显示。");
-            if(ok){
-              __ED=fd;appData=JSON.parse(JSON.stringify(fd));parseAppMonth();renderCalendar();
-              if(typeof renderInbox==="function")renderInbox();renderCatLegend();
-              if(window.sidebarDate)openSidebar(sidebarDate);
-            }
-          }
-        }
-      }
-    }catch(er){}
-  }
-});
-// ===== END SYNC =====</script>
+renderCalendar();
 
 <div class="inbox-picker-overlay" id="inboxPicker" onclick="if(event.target===this)closeInboxPicker()">
   <div class="inbox-picker">
