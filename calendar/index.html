@@ -175,16 +175,44 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .ai-loading.show{display:block}
 
 @media(max-width:768px){
-  .app{padding:12px 8px 40px}
-  .header{flex-direction:column;align-items:stretch;gap:10px}
-  .month-title{font-size:1.1rem;min-width:auto}
-  .grid{grid-auto-rows:minmax(75px,auto)}
-  .cell{min-height:75px;padding:4px}
-  .task-pill{font-size:.62rem;padding:1px 4px}
-  .date-num{font-size:.7rem;width:22px;height:22px}
-  .weekday{font-size:.65rem;padding:8px 4px}
-  .modal{width:95%}
-  .day-sidebar{width:100%;max-width:340px}
+  .app{padding:8px 4px 50px}
+  .header{margin-bottom:12px;gap:6px;flex-wrap:wrap}
+  .header-group{gap:4px}
+  .month-title{font-size:1rem;min-width:auto;letter-spacing:0}
+  .nav-btn{width:30px;height:30px;font-size:.85rem}
+  .today-btn{padding:5px 10px;font-size:.7rem}
+  .action-btn{padding:5px 10px;font-size:.68rem;gap:3px}
+  .calendar-wrap{border-radius:8px}
+  .weekday{font-size:.58rem;padding:8px 2px;letter-spacing:0}
+  .grid{grid-auto-rows:minmax(55px,auto)}
+  .cell{min-height:55px;padding:3px 2px 2px;overflow:hidden}
+  .date-num{font-size:.65rem;min-width:20px;height:20px;border-radius:10px;padding:0 2px;margin-bottom:1px}
+  /* Mobile: show only dots, hide text */
+  .task-pill{font-size:.55rem;padding:1px 2px;margin-bottom:1px;gap:2px;border-left-width:2px!important}
+  .task-pill .pill-dot{width:5px;height:5px;flex-shrink:0}
+  .task-pill .pill-check{display:none}
+  .task-pill span:not(.pill-dot):not(.pill-check){overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .more-badge{font-size:.5rem;padding:1px 4px;border-radius:6px;margin-left:1px}
+  /* AI FAB */
+  .ai-fab{width:42px;height:42px;bottom:16px;right:12px;font-size:1.1rem}
+  .ai-modal{width:96vw;max-height:90vh}
+  /* Sidebar full screen */
+  .day-sidebar{width:100%;max-width:100%}
+  .sidebar-header{padding:14px 16px}
+  .sidebar-tasks{padding:10px 14px}
+  .sidebar-footer{padding:10px 14px}
+  /* Modal */
+  .modal{width:96vw;max-height:90vh}
+  .modal-body{padding:14px 16px;gap:10px}
+  .modal-header{padding:14px 16px}
+  .modal-footer{padding:10px 16px}
+  /* Inbox */
+  .inbox-header{padding:12px 14px}
+  .inbox-item{padding:8px 6px;gap:6px}
+  .inbox-item .inbox-title{font-size:.76rem}
+  .inbox-list{padding:6px 8px}
+  /* Legend */
+  .cat-legend{font-size:.68rem;gap:4px 10px;padding:6px 10px 2px}
 }
 
 .inbox-add-btn{padding:6px 14px;border-radius:18px;border:1.5px dashed var(--border);background:transparent;color:var(--accent);cursor:pointer;font-size:.78rem;font-weight:600;transition:var(--transition);white-space:nowrap}
