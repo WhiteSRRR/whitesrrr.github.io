@@ -322,7 +322,7 @@ function loadData(){
 
 
 
-function saveData(){ __ED = JSON.parse(JSON.stringify(appData)); syncToFile(); }
+function saveData(){ appData.version = (appData.version || 1) + 1; __ED = JSON.parse(JSON.stringify(appData)); syncToFile(); }
 
 var appData = loadData();
 var currentYear, currentMonth, selectedDate = null;
@@ -737,7 +737,7 @@ async function restoreSync(){
               var j=text.substring(s+12,e).trim();
               if(j.endsWith(';'))j=j.slice(0,-1);
               var fd=JSON.parse(j);
-              if(fd.tasks && fd.version > __ED.version){__ED=fd;appData=JSON.parse(JSON.stringify(fd));parseAppMonth();renderCalendar();}
+              if(fd.tasks && fd.version > __ED.version){__ED=fd;appData=JSON.parse(JSON.stringify(fd));parseAppMonth();renderCalendar();if(typeof renderInbox==="function")renderInbox();renderCatLegend();}
             }
           }
           resolve(true);
@@ -798,7 +798,7 @@ document.addEventListener("visibilitychange",async function(){
     if (!t.hasOwnProperty('description')) t.description = '';
     if (!t.hasOwnProperty('date')) t.date = t.date || '';
   });
-  saveData();
+  // saveData() removed - no longer overwrites local file on page load
 
   
   // ---- CATEGORY LEGEND ----
