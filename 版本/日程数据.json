@@ -1,0 +1,89 @@
+{
+  "version": 3,
+  "currentMonth": "2026-06",
+  "currentView": "calendar",
+  "categories": [
+    {
+      "id": "cat_work",
+      "name": "工作",
+      "color": "#5b5fc7"
+    },
+    {
+      "id": "cat_personal",
+      "name": "个人",
+      "color": "#10b981"
+    },
+    {
+      "id": "cat_study",
+      "name": "学习",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "cat_important",
+      "name": "重要",
+      "color": "#e5484d"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "s1",
+      "date": "2026-06-03",
+      "endDate": "2026-06-05",
+      "time": "09:30",
+      "title": "季度规划会议",
+      "category": "cat_work",
+      "done": false,
+      "location": "会议室A"
+    },
+    {
+      "id": "s2",
+      "date": "2026-06-08",
+      "endDate": "",
+      "time": "14:00",
+      "title": "提交项目报告",
+      "category": "cat_important",
+      "done": false,
+      "location": ""
+    },
+    {
+      "id": "s3",
+      "date": "2026-06-12",
+      "endDate": "",
+      "time": "",
+      "title": "健身训练",
+      "category": "cat_personal",
+      "done": true,
+      "location": "健身房"
+    },
+    {
+      "id": "s4",
+      "date": "2026-06-15",
+      "endDate": "",
+      "time": "10:00",
+      "title": "复习公司法",
+      "category": "cat_study",
+      "done": false,
+      "location": "图书馆"
+    },
+    {
+      "id": "s5",
+      "date": "2026-06-18",
+      "endDate": "2026-06-20",
+      "time": "",
+      "title": "部门团建",
+      "category": "cat_work",
+      "done": false,
+      "location": "郊区"
+    },
+    {
+      "id": "s6",
+      "date": "2026-06-22",
+      "endDate": "",
+      "time": "16:00",
+      "title": "牙科预约",
+      "category": "cat_personal",
+      "done": false,
+      "location": "市中心诊所"
+    }
+  ]
+}
